@@ -7,6 +7,9 @@ WORKDIR /app
 COPY mvnw mvnw.cmd pom.xml ./
 COPY .mvn/ .mvn/
 
+# Ensure mvnw is executable and fix CRLF line endings (Windows -> Linux)
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
+
 # Download dependencies
 RUN ./mvnw -q -B -DskipTests dependency:go-offline
 
@@ -17,7 +20,7 @@ RUN ./mvnw -q -B -DskipTests clean package
 # Runtime image
 FROM eclipse-temurin:17-jre
 ENV JAVA_OPTS="" \
-    SPRING_PROFILES_ACTIVE=prod
+    SPRING_PROFILES_ACTIVE=prod 
 
 WORKDIR /opt/app
 EXPOSE 8080
